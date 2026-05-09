@@ -16,13 +16,17 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-3-haiku-20240307',
-        max_tokens: 4000,
+        max_tokens: 1000,
         system,
         messages: [{ role: 'user', content }]
       })
     });
     const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) {
+      return res.status(500).json({ 
+        error: `Type: ${data.error.type} | Message: ${data.error.message}` 
+      });
+    }
     const text = (data.content || []).map(c => c.text || '').join('');
     res.status(200).json({ text });
   } catch (error) {
